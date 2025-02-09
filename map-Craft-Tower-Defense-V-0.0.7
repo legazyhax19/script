@@ -1,0 +1,44 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Script Craft Tower Defense", "Synapse")
+
+local Tab = Window:NewTab("Menu")
+local Section = Tab:NewSection("General")
+
+
+
+
+local autoReplayEnabled = false
+
+local function autoReplay()
+    local replicatedStorage = game:GetService("ReplicatedStorage")
+    local package = replicatedStorage.packages._Index:FindFirstChild("sleitnick_knit@1.7.0")
+
+    if package then
+        local knitService = package.knit.Services.endService.RE
+        if knitService and knitService.action then
+            local args = {
+                [1] = {
+                    ["action"] = "vote", 
+                    ["type"] = "replay"
+                }
+            }
+
+            knitService.action:FireServer(unpack(args))
+        else
+            print("Error: Action not found in the knit service.")
+        end
+    else
+        print("Error: Package 'sleitnick_knit@1.7.0' not found.")
+    end
+end
+
+Section:NewToggle("Auto Replay", "Enable Auto Replay", function(state)
+    if state then
+        print("Auto Replay Enabled")
+        autoReplayEnabled = true
+        startAutoReplay()
+    else
+        print("Auto Replay Disabled")
+        autoReplayEnabled = false
+    end
+end)
