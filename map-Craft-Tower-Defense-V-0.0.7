@@ -4,41 +4,140 @@ local Window = Library.CreateLib("Script Craft Tower Defense", "Synapse")
 local Tab = Window:NewTab("Menu")
 local Section = Tab:NewSection("General")
 
-
-
-
 local autoReplayEnabled = false
+local autoSpeedEnabled = false
 
-local function autoReplay()
-    local replicatedStorage = game:GetService("ReplicatedStorage")
-    local package = replicatedStorage.packages._Index:FindFirstChild("sleitnick_knit@1.7.0")
+local function startAutoReplay()
+    while autoReplayEnabled do
+        local replicatedStorage = game:GetService("ReplicatedStorage")
+        local package = replicatedStorage.packages._Index:FindFirstChild("sleitnick_knit@1.7.0")
 
-    if package then
-        local knitService = package.knit.Services.endService.RE
-        if knitService and knitService.action then
-            local args = {
-                [1] = {
-                    ["action"] = "vote", 
-                    ["type"] = "replay"
+        if package then
+            local knitService = package.knit.Services.endService.RE
+            if knitService and knitService.action then
+                local args = {
+                    [1] = {
+                        ["action"] = "vote", 
+                        ["type"] = "replay"
+                    }
                 }
-            }
-
-            knitService.action:FireServer(unpack(args))
+                knitService.action:FireServer(unpack(args))
+            else
+                print("Error: Action not found in the knit service.")
+            end
         else
-            print("Error: Action not found in the knit service.")
+            print("Error: Package 'sleitnick_knit@1.7.0' not found.")
         end
-    else
-        print("Error: Package 'sleitnick_knit@1.7.0' not found.")
+        wait(1) 
     end
 end
 
+local function startAutoSpeed()
+    game:GetService("ReplicatedStorage")
+        .packages._Index:FindFirstChild("sleitnick_knit@1.7.0")
+        .knit.Services.speedService.RE.set:FireServer(2)
+end
+
+
 Section:NewToggle("Auto Replay", "Enable Auto Replay", function(state)
+    autoReplayEnabled = state
     if state then
         print("Auto Replay Enabled")
-        autoReplayEnabled = true
-        startAutoReplay()
+        spawn(startAutoReplay) 
     else
         print("Auto Replay Disabled")
-        autoReplayEnabled = false
     end
 end)
+
+
+Section:NewToggle("Auto Speed", "Enable Speed", function(state)
+    if state then
+        print("Auto Speed Triggered")
+        startAutoSpeed() 
+    end
+end)
+
+
+local function startAutoSkip()
+    game:GetService("ReplicatedStorage")
+        .packages._Index:FindFirstChild("sleitnick_knit@1.7.0")
+        .knit.Services.autoSkipService.RE.toggle:FireServer()
+end
+
+Section:NewToggle("Auto Skip", "Enable Auto Skip", function(state)
+    if state then
+        print("Auto Skip Triggered")
+        startAutoSkip()
+    end
+end)
+
+
+
+local Section = Tab:NewSection("Misc")
+
+local function summonUnits()
+    while autoSummonEnabled do
+        local args = {
+            [1] = {
+                ["summonType"] = "normal",
+                ["action"] = "summon",
+                ["amount"] = 10
+            }
+        }
+
+        local replicatedStorage = game:GetService("ReplicatedStorage")
+        local package = replicatedStorage.packages._Index:FindFirstChild("sleitnick_knit@1.7.0")
+
+        if package then
+            local summonService = package.knit.Services.summonService.RE
+            if summonService and summonService.action then
+                print("🟢 Sending summon request:", args[1])
+                summonService.action:FireServer(unpack(args))
+            else
+                print("❌ summonService.action not found.")
+            end
+        else
+            print("❌ Package 'sleitnick_knit@1.7.0' not found.")
+        end
+
+        if not autoSummonEnabled then
+            print("❌ Auto Summon Stopped")
+            break
+        end
+
+        wait(0.1)
+    end
+end
+
+Section:NewToggle("Auto Summon 10 Units", "Enable Auto Summon", function(state)
+    autoSummonEnabled = state
+    if state then
+        print("✅ Auto Summon Enabled")
+        spawn(summonUnits) 
+    else
+        print("❌ Auto Summon Disabled")
+    end
+end)
+
+
+
+     
+     
+     
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
